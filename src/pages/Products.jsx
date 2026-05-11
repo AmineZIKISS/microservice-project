@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { useCart } from '../context/CartContext';
 import './Products.css';
 
+const API_URL = 'http://localhost:5002/api/products';
+
 export default function Products() {
   const { t } = useTranslation();
   const { addToCart } = useCart();
@@ -27,19 +29,15 @@ export default function Products() {
     setLoading(true);
     setError(null);
 
-    fetch('https://fakestoreapi.com/products') 
+    fetch(API_URL) 
       .then(res => {
         if (!res.ok) throw new Error('Erreur de chargement');
         return res.json();
       })
       .then(data => {
-        const adaptedData = data.map(item => ({
-          ...item,
-          name: item.title,
-        }));
-        
-        setProducts(adaptedData);
-        setFilteredProducts(adaptedData);
+        // Backend returns both `name` and `title` — no mapping needed
+        setProducts(data);
+        setFilteredProducts(data);
         setLoading(false);
       })
       .catch(err => {
@@ -121,10 +119,14 @@ export default function Products() {
           <div className="toolbar-item categories-filter">
             <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="custom-select">
               <option value="all">{t('all_categories')}</option>
-              <option value="men's clothing">Men's Clothing</option>
-              <option value="jewelery">Jewelery</option>
-              <option value="electronics">Electronics</option>
-              <option value="women's clothing">Women's Clothing</option>
+              <option value="Tapis">🧶 Tapis / Rugs</option>
+              <option value="Céramique">🏺 Céramique / Ceramics</option>
+              <option value="Bijoux">💎 Bijoux / Jewelry</option>
+              <option value="Cuir">👜 Cuir / Leather</option>
+              <option value="Cuisine">🍵 Cuisine / Kitchen</option>
+              <option value="Décoration">🏮 Décoration / Home Decor</option>
+              <option value="Beauté">✨ Beauté / Beauty</option>
+              <option value="Mode">👗 Mode / Fashion</option>
             </select>
           </div>
 
@@ -142,7 +144,7 @@ export default function Products() {
         <div className="products-grid">
           {filteredProducts.length > 0 ? (
             filteredProducts.map(product => (
-              <div key={product.id} className="product-card">
+              <div key={product._id} className="product-card">
                 <div className="product-image-wrapper">
                    <img src={product.image} alt={product.name} className="product-img" />
                    <button className="add-cart-btn" onClick={() => addToCart(product)}>
@@ -151,7 +153,7 @@ export default function Products() {
                 </div>
                 <div className="product-info">
                   <span className="product-cat">{product.category}</span>
-                  <Link to={`/products/${product.id}`} className="product-name">
+                  <Link to={`/products/${product._id}`} className="product-name">
                     {product.name}
                   </Link>
                   <span className="product-price">{product.price} DH</span>

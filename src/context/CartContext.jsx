@@ -14,13 +14,20 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('shopping-cart', JSON.stringify(cart));
   }, [cart]);
 
+  // ---------------------------------------------------------------------------
+  // Get a stable product ID — works with both MongoDB `_id` and plain `id`
+  // ---------------------------------------------------------------------------
+  const getProductId = (product) => product._id || product.id;
+
   const addToCart = (product) => {
+    const productId = getProductId(product);
+
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
+      const existingItem = prevCart.find((item) => getProductId(item) === productId);
       
       if (existingItem) {
         return prevCart.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          getProductId(item) === productId ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
         return [...prevCart, { ...product, quantity: 1 }];
@@ -29,13 +36,13 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    setCart((prevCart) => prevCart.filter((item) => getProductId(item) !== id));
   };
 
   const updateQuantity = (id, amount) => {
     setCart((prevCart) => 
       prevCart.map((item) => {
-        if (item.id === id) {
+        if (getProductId(item) === id) {
           const newQuantity = item.quantity + amount;
           return newQuantity > 0 ? { ...item, quantity: newQuantity } : item;
         }

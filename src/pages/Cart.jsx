@@ -8,6 +8,9 @@ export default function Cart() {
   const { t } = useTranslation(); 
   const { cart, removeFromCart, updateQuantity, total } = useCart();
 
+  // Helper — get stable ID from either MongoDB _id or plain id
+  const getId = (item) => item._id || item.id;
+
   if (cart.length === 0) {
     return (
       <div className="cart-container">
@@ -30,17 +33,17 @@ export default function Cart() {
       
       <div className="cart-items-list">
         {cart.map((item) => (
-          <div key={item.id} className="cart-item">
-            <img src={item.image} alt={item.title} className="cart-item-img" />
+          <div key={getId(item)} className="cart-item">
+            <img src={item.image} alt={item.name || item.title} className="cart-item-img" />
             <div className="item-details">
-              <h3>{item.title}</h3>
+              <h3>{item.name || item.title}</h3>
               <p className="item-price">{item.price} DH</p>
             </div>
 
             <div className="qty-controls">
-              <button onClick={() => updateQuantity(item.id, -1)} className="qty-btn">-</button>
+              <button onClick={() => updateQuantity(getId(item), -1)} className="qty-btn">-</button>
               <span className="qty-value">{item.quantity}</span>
-              <button onClick={() => updateQuantity(item.id, 1)} className="qty-btn">+</button>
+              <button onClick={() => updateQuantity(getId(item), 1)} className="qty-btn">+</button>
             </div>
 
             <div className="item-subtotal">
@@ -48,7 +51,7 @@ export default function Cart() {
             </div>
 
             <button 
-              onClick={() => removeFromCart(item.id)}
+              onClick={() => removeFromCart(getId(item))}
               className="remove-btn"
               title={t('remove')} 
             >

@@ -1,0 +1,214 @@
+# =============================================================================
+#
+#  docker-compose.yml — Artisanashop Microservices Orchestration
+#
+# =============================================================================
+#
+#  This file spins up the ENTIRE microservices architecture:
+#
+#    Infrastructure:
+#      - MongoDB       (database for all services)
+#      - RabbitMQ      (message broker for async communication)
+#
+#    Microservices:
+#      - auth-service          (port 5001) — JWT authentication + RabbitMQ publisher
+#      - product-service       (port 5002) — Product catalog REST API
+#      - order-service         (port 5003) — Order management + sync/async comms
+#      - notification-service  (port 5004) — RabbitMQ consumer + notifications
+#
+#  Communication Patterns Demonstrated:
+#    ① SYNCHRONOUS:  order-service → product-service (HTTP/Axios)
+#    ② ASYNCHRONOUS: auth-service → RabbitMQ → notification-service
+#                    order-service → RabbitMQ → notification-service
+#
+#  Usage:
+#    docker-compose up --build        # Build & start all services
+#    docker-compose up -d             # Start in detached mode
+#    docker-compose down              # Stop all services
+#    docker-compose logs -f           # Follow all logs
+#    docker-compose logs auth-service # Follow specific service logs
+#
+# =============================================================================
+
+services:
+
+  # ===========================================================================
+  #  MongoDB — Shared Database
+  # ===========================================================================
+  # All microservices connect to this single MongoDB instance, but each uses
+  # its own database (artisanashop-auth, artisanashop-products, etc.) for
+  # data isolation — a common pattern in microservices.
+  # ===========================================================================
+  mongodb:
+    image: mongo:7
+    container_name: artisanashop-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - artisanashop-net
+    restart: unless-stopped
+
+  # ===========================================================================
+  #  RabbitMQ — Message Broker (Asynchronous Communication)
+  # ===========================================================================
+  # Uses the management plugin image to provide a web UI at port 15672.
+  # Default credentials: guest / guest
+  # Management UI: http://localhost:15672
+  # ===========================================================================
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: artisanashop-rabbitmq
+    ports:
+      - "5672:5672"     # AMQP protocol port
+      - "15672:15672"   # Management Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - artisanashop-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===========================================================================
+  #  🔐 Auth Service (Port 5001)
+  # ===========================================================================
+  #  Handles user registration and login with JWT tokens.
+  #
+  #  ASYNC PUBLISHER: After a successful registration, publishes a
+  #  "user.registered" event to RabbitMQ → consumed by notification-service.
+  # ===========================================================================
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: artisanashop-auth
+    ports:
+      - "5001:5001"
+    environment:
+      PORT: 5001
+      # Inside Docker, we use the service name "mongodb" instead of "localhost"
+      MONGO_URI: mongodb://mongodb:27017/artisanashop-auth
+      # Inside Docker, we use the service name "rabbitmq" instead of "localhost"
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: artisanashop_jwt_secret_change_me_in_production
+      JWT_EXPIRES_IN: 30d
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - artisanashop-net
+    restart: unless-stopped
+
+  # ===========================================================================
+  #  📦 Product Service (Port 5002)
+  # ===========================================================================
+  #  REST API for the product catalog.
+  #  Called SYNCHRONOUSLY by order-service via HTTP (Axios) to validate
+  #  product availability and pricing during order creation.
+  # ===========================================================================
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    container_name: artisanashop-products
+    ports:
+      - "5002:5002"
+    environment:
+      PORT: 5002
+      MONGO_URI: mongodb://mongodb:27017/artisanashop-products
+    depends_on:
+      - mongodb
+    networks:
+      - artisanashop-net
+    restart: unless-stopped
+
+  # ===========================================================================
+  #  🛒 Order Service (Port 5003)
+  # ===========================================================================
+  #  Demonstrates BOTH communication patterns:
+  #
+  #  ① SYNCHRONOUS (HTTP/Axios):
+  #     When creating an order, calls product-service at
+  #     http://product-service:5002/api/products/:id to validate products.
+  #     Uses the Docker service name "product-service" for inter-container DNS.
+  #
+  #  ② ASYNCHRONOUS (RabbitMQ):
+  #     After order creation, publishes an "order.created" event
+  #     → consumed by notification-service.
+  # ===========================================================================
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    container_name: artisanashop-orders
+    ports:
+      - "5003:5003"
+    environment:
+      PORT: 5003
+      MONGO_URI: mongodb://mongodb:27017/artisanashop-orders
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: artisanashop_jwt_secret_change_me_in_production
+      # ① SYNC COMMUNICATION: URL of the product-service container
+      # Docker DNS resolves "product-service" to the container's IP
+      PRODUCT_SERVICE_URL: http://product-service:5002
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - product-service
+    networks:
+      - artisanashop-net
+    restart: unless-stopped
+
+  # ===========================================================================
+  #  🔔 Notification Service (Port 5004)
+  # ===========================================================================
+  #  ② ASYNCHRONOUS CONSUMER:
+  #     Listens to the "notification_queue" in RabbitMQ and processes:
+  #       - "user.registered" events (from auth-service)
+  #       - "order.created" events (from order-service)
+  #     Creates notification records in MongoDB for each consumed event.
+  # ===========================================================================
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: artisanashop-notifications
+    ports:
+      - "5004:5004"
+    environment:
+      PORT: 5004
+      MONGO_URI: mongodb://mongodb:27017/artisanashop-notifications
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - mongodb
+      - rabbitmq
+    networks:
+      - artisanashop-net
+    restart: unless-stopped
+
+# =============================================================================
+#  Volumes — Persist data across container restarts
+# =============================================================================
+volumes:
+  mongodb_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+# =============================================================================
+#  Networks — All services communicate on the same bridge network
+# =============================================================================
+# Docker's built-in DNS resolves service names (e.g., "mongodb", "rabbitmq",
+# "product-service") to their container IPs within this network.
+# =============================================================================
+networks:
+  artisanashop-net:
+    driver: bridge

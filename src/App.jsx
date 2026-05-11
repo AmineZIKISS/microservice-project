@@ -9,6 +9,7 @@ import Cart from './pages/Cart';
 import Contact from './pages/Contact';
 import About from './pages/About';
 import Login from './pages/Login';
+import Register from './pages/Register';
 
 import useTheme from './hooks/useTheme';
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />
           
           <Route path="*" element={
