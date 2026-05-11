@@ -25,3 +25,14 @@ build/
 *.njsproj
 *.sln
 *.sw?
+
+# Microservices & Docker rules
+**/node_modules/
+**/.env
+**/.env.*
+
+# Docker data volumes (to avoid pushing Database files to GitHub)
+mongo-data/
+db-data/
+data/
+rabbitmq_data/
