@@ -1,0 +1,138 @@
+.footer-container {
+  background-color: #1f2937;
+  color: #f3f4f6;
+  padding: 60px 40px 20px;
+  margin-top: auto;
+  font-family: 'Segoe UI', sans-serif;
+  border-top: 1px solid transparent;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-bottom: 1px solid #374151;
+  padding-bottom: 40px;
+}
+
+.footer-logo-img {
+  height: 55px;
+  width: auto;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.brand-section .footer-text {
+  color: #9ca3af;
+  line-height: 1.6;
+  font-size: 0.9rem;
+  max-width: 300px;
+}
+
+.footer-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #ea580c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-links-list, .contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links-list li {
+  margin-bottom: 10px;
+}
+
+.footer-links-list a {
+  color: #d1d5db;
+  text-decoration: none;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.footer-links-list a:hover {
+  color: #ea580c;
+  transform: translateX(5px);
+}
+
+.contact-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+  color: #d1d5db;
+  font-size: 0.95rem;
+}
+
+.contact-list .icon {
+  font-size: 1.2rem;
+  min-width: 25px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.social-btn {
+  background-color: #374151;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 1px solid transparent;
+}
+
+.social-btn:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.social-btn.facebook:hover {
+  background-color: #1877f2;
+}
+
+.social-btn.instagram:hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  border: none;
+}
+
+.social-btn.whatsapp:hover {
+  background-color: #25d366;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 25px;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+body.dark .footer-container {
+  background-color: #111827;
+  border-top: 1px solid #374151;
+}
+
+body.dark .social-btn {
+  background-color: #1f2937;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    padding: 40px 20px 20px;
+  }
+  .footer-content {
+    gap: 30px;
+  }
+}
