@@ -24,7 +24,10 @@ const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Attach decoded user info to request
-      req.user = { id: decoded.id };
+      req.user = { 
+        id: decoded.id,
+        email: decoded.email
+      };
       next();
     } catch (error) {
       console.error('JWT verification failed:', error.message);

@@ -7,13 +7,17 @@ dotenv.config();
 // ---------------------------------------------------------------------------
 // Moroccan Artisan Products — Seed Data
 // Categories: Tapis, Céramique, Bijoux, Cuir, Cuisine, Décoration, Beauté, Mode
+//
+// Images are served from the React public/images folder.
+// In Vite, files in /public are served at the root path.
+// So /images/tapis-beni-ouarain.jpg → http://localhost:5173/images/tapis-beni-ouarain.jpg
 // ---------------------------------------------------------------------------
 const products = [
   {
     name: 'Tapis Beni Ouarain',
     price: 1200,
     category: 'Tapis',
-    image: 'https://placehold.co/400x400?text=Tapis+Beni+Ouarain',
+    image: '/images/tapis-beni-ouarain.jpg',
     description:
       'Tapis berbère en laine pure, tissé à la main dans les montagnes du Moyen Atlas. Motifs géométriques traditionnels noir et blanc.',
     inStock: true,
@@ -22,7 +26,7 @@ const products = [
     name: 'Tapis Azilal Coloré',
     price: 950,
     category: 'Tapis',
-    image: 'https://placehold.co/400x400?text=Tapis+Azilal',
+    image: '/images/tapis-azilal.jpg',
     description:
       'Tapis artisanal aux couleurs vives, tissé par les femmes de la région d\'Azilal. Chaque pièce est unique.',
     inStock: true,
@@ -31,7 +35,7 @@ const products = [
     name: 'Tajine Terre Cuite Décoré',
     price: 150,
     category: 'Céramique',
-    image: 'https://placehold.co/400x400?text=Tajine',
+    image: '/images/tajine-terre-cuite.jpg',
     description:
       'Tajine traditionnel en terre cuite avec motifs peints à la main. Idéal pour une cuisson lente et savoureuse.',
     inStock: true,
@@ -40,7 +44,7 @@ const products = [
     name: 'Assiettes Fassi (Lot de 4)',
     price: 280,
     category: 'Céramique',
-    image: 'https://placehold.co/400x400?text=Assiettes+Fassi',
+    image: '/images/assiettes-fassi.jpg',
     description:
       'Lot de 4 assiettes en céramique de Fès, décorées de motifs bleus traditionnels. Fabriquées artisanalement.',
     inStock: true,
@@ -49,7 +53,7 @@ const products = [
     name: 'Vase Safi Émaillé',
     price: 320,
     category: 'Céramique',
-    image: 'https://placehold.co/400x400?text=Vase+Safi',
+    image: '/images/vase-safi.jpg',
     description:
       'Vase en céramique émaillée de Safi, aux teintes turquoise et doré. Pièce décorative authentique.',
     inStock: false,
@@ -58,7 +62,7 @@ const products = [
     name: 'Collier Berbère en Argent',
     price: 450,
     category: 'Bijoux',
-    image: 'https://placehold.co/400x400?text=Collier+Berbere',
+    image: '/images/collier-berbere.jpg',
     description:
       'Collier en argent massif avec motifs berbères gravés. Bijou traditionnel du sud marocain.',
     inStock: true,
@@ -67,7 +71,7 @@ const products = [
     name: 'Bracelet Amazigh Émaillé',
     price: 220,
     category: 'Bijoux',
-    image: 'https://placehold.co/400x400?text=Bracelet+Amazigh',
+    image: '/images/bracelet-amazigh.jpg',
     description:
       'Bracelet artisanal en argent avec émail coloré. Inspiré des symboles Amazighs ancestraux.',
     inStock: true,
@@ -76,7 +80,7 @@ const products = [
     name: 'Babouches Cuir de Fès',
     price: 180,
     category: 'Cuir',
-    image: 'https://placehold.co/400x400?text=Babouches+Fes',
+    image: '/images/babouches-cuir.jpg',
     description:
       'Babouches traditionnelles en cuir tannées naturellement dans les tanneries de Fès. Cousu main.',
     inStock: true,
@@ -85,7 +89,7 @@ const products = [
     name: 'Pouf Marocain en Cuir',
     price: 350,
     category: 'Cuir',
-    image: 'https://placehold.co/400x400?text=Pouf+Cuir',
+    image: '/images/pouf-marocain.jpg',
     description:
       'Pouf rond en cuir véritable brodé à la main. Garniture non incluse. Parfait comme assise ou décoration.',
     inStock: true,
@@ -94,7 +98,7 @@ const products = [
     name: 'Sac Besace Cuir Tanné',
     price: 420,
     category: 'Cuir',
-    image: 'https://placehold.co/400x400?text=Sac+Besace',
+    image: '/images/sac-besace-cuir.jpg',
     description:
       'Sac besace en cuir de chèvre tanné végétal. Fabriqué à la main dans le souk de Marrakech.',
     inStock: true,
@@ -103,7 +107,7 @@ const products = [
     name: 'Théière Argentée Traditionnelle',
     price: 380,
     category: 'Cuisine',
-    image: 'https://placehold.co/400x400?text=Theiere+Argentee',
+    image: '/images/theiere-argentee.jpg',
     description:
       'Théière marocaine en maillechort argenté, gravée de motifs floraux. Indispensable pour le thé à la menthe.',
     inStock: true,
@@ -112,7 +116,7 @@ const products = [
     name: 'Plateau à Thé en Cuivre',
     price: 500,
     category: 'Cuisine',
-    image: 'https://placehold.co/400x400?text=Plateau+Cuivre',
+    image: '/images/plateau-cuivre.jpg',
     description:
       'Grand plateau ciselé en cuivre, idéal pour le service à thé traditionnel marocain.',
     inStock: true,
@@ -121,7 +125,7 @@ const products = [
     name: 'Lanterne en Cuivre Découpé',
     price: 290,
     category: 'Décoration',
-    image: 'https://placehold.co/400x400?text=Lanterne+Cuivre',
+    image: '/images/lanterne-cuivre.jpg',
     description:
       'Lanterne marocaine en cuivre finement découpé à la main. Projette de magnifiques ombres sur les murs.',
     inStock: true,
@@ -130,7 +134,7 @@ const products = [
     name: 'Miroir Cadre Bois Sculpté',
     price: 340,
     category: 'Décoration',
-    image: 'https://placehold.co/400x400?text=Miroir+Bois',
+    image: '/images/miroir-bois-sculpte.jpg',
     description:
       'Miroir avec cadre en bois de thuya sculpté à la main. Origine : Essaouira.',
     inStock: true,
@@ -139,7 +143,7 @@ const products = [
     name: 'Huile d\'Argan Bio 100ml',
     price: 180,
     category: 'Beauté',
-    image: 'https://placehold.co/400x400?text=Huile+Argan',
+    image: '/images/huile-argan.jpg',
     description:
       'Huile d\'argan cosmétique 100% bio, pressée à froid. Hydrate la peau et nourrit les cheveux.',
     inStock: true,
@@ -148,7 +152,7 @@ const products = [
     name: 'Savon Noir Beldi à l\'Eucalyptus',
     price: 75,
     category: 'Beauté',
-    image: 'https://placehold.co/400x400?text=Savon+Beldi',
+    image: '/images/savon-noir-beldi.jpg',
     description:
       'Savon noir traditionnel à l\'eucalyptus pour le hammam. Exfolie et purifie la peau en douceur.',
     inStock: true,
@@ -157,7 +161,7 @@ const products = [
     name: 'Djellaba Homme en Laine',
     price: 600,
     category: 'Mode',
-    image: 'https://placehold.co/400x400?text=Djellaba+Homme',
+    image: '/images/djellaba-homme.jpg',
     description:
       'Djellaba traditionnelle en laine tissée. Confortable et élégante, parfaite pour les saisons fraîches.',
     inStock: false,
@@ -166,7 +170,7 @@ const products = [
     name: 'Caftan Femme Brodé',
     price: 850,
     category: 'Mode',
-    image: 'https://placehold.co/400x400?text=Caftan+Femme',
+    image: '/images/caftan-femme.jpg',
     description:
       'Caftan marocain brodé à la main avec fils dorés. Pièce festive d\'exception.',
     inStock: true,
@@ -179,7 +183,7 @@ const products = [
 const seedDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('✅ Connected to MongoDB Atlas for seeding');
+    console.log('✅ Connected to MongoDB for seeding');
 
     // Clear existing products
     await Product.deleteMany({});

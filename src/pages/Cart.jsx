@@ -1,15 +1,62 @@
-// src/pages/Cart.jsx
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import './Cart.css';
 
 export default function Cart() {
   const { t } = useTranslation(); 
-  const { cart, removeFromCart, updateQuantity, total } = useCart();
+  const { cart, removeFromCart, updateQuantity, total, clearCart } = useCart();
+  const { token, user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Helper — get stable ID from either MongoDB _id or plain id
   const getId = (item) => item._id || item.id;
+
+  const handleCheckout = async () => {
+    if (!token) {
+      alert(t('login_required_checkout') || 'Veuillez vous connecter pour passer la commande');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const orderData = {
+        items: cart.map(item => ({
+          productId: getId(item),
+          quantity: item.quantity
+        }))
+      };
+
+      const response = await fetch('http://localhost:5003/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Une erreur est survenue lors de la commande');
+      }
+
+      alert('Commande passée avec succès !');
+      clearCart();
+    } catch (err) {
+      console.error('Checkout error:', err);
+      setError(err.message);
+      alert(`Erreur: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (cart.length === 0) {
     return (
@@ -66,8 +113,13 @@ export default function Cart() {
           {t('total')}: 
           <span className="total-price">{total.toFixed(2)} DH</span>
         </div>
-        <button className="checkout-btn">
-          {t('checkout')}
+        {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+        <button 
+          className="checkout-btn" 
+          onClick={handleCheckout}
+          disabled={isLoading}
+        >
+          {isLoading ? '⏳ Traitement...' : t('checkout')}
         </button>
       </div>
     </div>

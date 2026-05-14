@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../context/CartContext';
+import { ProductCard } from '../components';
 import './Products.css';
 
 const API_URL = 'http://localhost:5002/api/products';
@@ -144,21 +145,7 @@ export default function Products() {
         <div className="products-grid">
           {filteredProducts.length > 0 ? (
             filteredProducts.map(product => (
-              <div key={product._id} className="product-card">
-                <div className="product-image-wrapper">
-                   <img src={product.image} alt={product.name} className="product-img" />
-                   <button className="add-cart-btn" onClick={() => addToCart(product)}>
-                     + {t('add_to_cart')}
-                   </button>
-                </div>
-                <div className="product-info">
-                  <span className="product-cat">{product.category}</span>
-                  <Link to={`/products/${product._id}`} className="product-name">
-                    {product.name}
-                  </Link>
-                  <span className="product-price">{product.price} DH</span>
-                </div>
-              </div>
+              <ProductCard key={product._id} product={product} />
             ))
           ) : (
             <div className="no-results">

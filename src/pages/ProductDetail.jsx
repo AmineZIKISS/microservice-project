@@ -15,12 +15,17 @@ export default function ProductDetail() {
   if (error) return <div style={{textAlign:'center', color:'red'}}>Erreur: {error}</div>;
   if (!product) return <div style={{textAlign:'center'}}>Produit introuvable</div>;
 
+  const handleImageError = (e) => {
+    e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/1/13/3119925963_2_3_yXx93oMy.jpg';
+  };
+
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', display: 'flex', gap: '30px', alignItems:'flex-start' }}>
       <img 
         src={product.image} 
         alt={product.name} 
         style={{ width: '300px', objectFit: 'contain', border: '1px solid #eee', padding: '10px', borderRadius: '8px' }} 
+        onError={handleImageError}
       />
       
       <div>
